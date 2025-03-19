@@ -1,0 +1,58 @@
+/* Reset Style */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+}
+
+/* Container */
+.container {
+    width: 90%;
+    margin: auto;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.container h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+
+/* Informasi Kontak */
+.contact-info {
+    margin-top: 30px;
+}
+
+.contact-info p {
+    font-size: 1.1em;
+    margin: 10px 0;
+    color: #555;
+}
+
+/* Footer */
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 100px;
+}

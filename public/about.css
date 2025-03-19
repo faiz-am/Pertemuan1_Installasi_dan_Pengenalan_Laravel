@@ -1,0 +1,112 @@
+/* Reset Style */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+}
+
+/* Banner About */
+.banner {
+    text-align: center;
+    color: rgb(9, 9, 9);
+    padding: 100px 20px;
+}
+
+.banner h1 {
+    font-size: 2.5em;
+}
+
+/* Container */
+.container {
+    width: 90%;
+    margin: auto;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.container h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.container p {
+    font-size: 1.1em;
+    color: #555;
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Tim Kami */
+.team {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.team-member {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.team-member img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.team-member h3 {
+    margin: 10px 0;
+}
+
+.team-member p {
+    color: #777;
+}
+
+/* Misi & Visi */
+.mission-vision {
+    background-color: #f8f9fa;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.mission-vision h2 {
+    margin-bottom: 20px;
+}
+
+.mission-vision p {
+    max-width: 800px;
+    margin: auto;
+    color: #555;
+}
+
+/* Footer */
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 20px;
+}
