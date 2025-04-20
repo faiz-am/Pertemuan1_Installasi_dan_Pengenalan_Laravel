@@ -1,59 +1,111 @@
-<html lang="en"> 
-<head> 
-<meta charset="utf-8"> 
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-<title>Bootstrap demo</title> 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
-</head> 
-<body> 
-   <nav class="navbar navbar-expand-lg bg-body-tertiary"> 
-       <div class="container-fluid"> 
-           <a class="navbar-brand" href="#">Navbar</a> 
-           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> 
-               <span class="navbar-toggler-icon"></span> 
-           </button> 
-           <div class="collapse navbar-collapse" id="navbarSupportedContent"> 
-               <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
-                   <li class="nav-item"> 
-                       <a class="nav-link active" aria-current="page" href="#">Home</a> 
-                   </li> 
-                   <li class="nav-item"> 
-                       <a class="nav-link" href="#">Link</a> 
-                   </li> 
-                   <li class="nav-item dropdown"> 
-                       <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> 
-                       Dropdown 
-                       </a> 
-                       <ul class="dropdown-menu"> 
-                           <li><a class="dropdown-item" href="#">pria</a></li> 
-                           <li><a class="dropdown-item" href="#">wanita</a></li> 
-                           <li><hr class="dropdown-divider"></li> 
-                           <li><a class="dropdown-item" href="#">anak anak</a></li> 
-                       </ul> 
-                   </li> 
-                   <li class="nav-item"> 
-                       <a class="nav-link disabled" aria-disabled="true">Disabled</a> 
-                   </li> 
-               </ul> 
-               <form class="d-flex" role="search"> 
-                   <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"> 
-                   <button class="btn btn-outline-success" type="submit">Search</button> 
-               </form> 
-           </div> 
-       </div> 
-   </nav> 
- 
-   <h1>ini homepage</h1> 
-
- <div>
- <x-card></x-card> 
+@php
+    $cards = [
+        [
+            'img' => 'https://i.pinimg.com/736x/05/eb/9f/05eb9fada5c8b267b5414b7055eeed95.jpg',
+            'judul' => 'Kaos Polos',
+            'desk' => 'Kaos polos berbahan katun yang nyaman dipakai sehari-hari.',
+            'btn' => 'Beli Sekarang'
+        ],
+        [
+            'img' => 'https://i.pinimg.com/736x/2e/15/d4/2e15d4b6bf276b4d0fb460bfba2325c6.jpg',
+            'judul' => 'Jaket Denim',
+            'desk' => 'Jaket denim trendi yang cocok untuk segala suasana.',
+            'btn' => 'Beli Sekarang'
+        ],
+        [
+            'img' => 'https://i.pinimg.com/736x/71/05/27/7105273630fdf22ab86d405c10ca2d28.jpg',
+            'judul' => 'Kemeja Batik',
+            'desk' => 'Kemeja batik elegan dengan motif klasik khas Indonesia.',
+            'btn' => 'Beli Sekarang'
+        ],
+        [
+            'img' => 'https://i.pinimg.com/736x/e0/33/75/e0337500e733863bd5395d8836a6e21d.jpg',
+            'judul' => 'Hoodie Oversize',
+            'desk' => 'Hoodie oversize dengan bahan fleece yang hangat dan nyaman.',
+            'btn' => 'Beli Sekarang'
+        ],
+    ];
+@endphp
+<x-layout>
+ <div class="row">
+ <h3>Categories</h3>
+ @foreach($categories as $category)
+ <div class="col-2">
+ <div class="card">
+ <img src="{{ $category['image'] }}" class="card-img-top" alt="...">
+ <div class="card-body">
+ <h5 class="card-title">{{ $category['name'] }}</h5>
+ <p class="card-text">
+ {{ $category['description'] }}
+ </p>
+<a href="/category/{{ $category['slug'] }}" class="btn
+btn-primary">Detail</a>
  </div>
- <div>
- <x-alert></x-alert> 
- </div> 
-   <script 
-src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-crossorigin="anonymous"></script> 
-</body> 
-</html> 
+ </div>
+ </div>
+ @endforeach
+ </div>
+</x-layout>
+
+
+<x-layout>
+    <div class="container py-5">
+    <x-slot name="title">{{ $title ?? 'Default Title' }}</x-slot>
+
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="fw-bold text-primary border-bottom pb-2 mb-4">Baju Kami yang Masih Tersedia</h2>
+            </div>
+        </div>
+
+        <div class=" d-flex flex-wrap g-2 mb-5">
+            @foreach ($cards as $card)
+                <div class="col-12 col-md-6 col-lg-3 px-1 mb-2">
+                    <x-card img="{{ $card['img'] }}">
+                        <x-slot name="judul">{{ $card['judul'] }}</x-slot>
+                        <x-slot name="desk">{{ $card['desk'] }}</x-slot>
+                        <x-slot name="button">
+                            <x-button name="slot" class="btn-primary w-100">
+                                <i class="bi bi-cart-plus me-2"></i>{{ $card['btn'] }}
+                            </x-button>
+                        </x-slot>
+                    </x-card>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="d-flex flex-column justify-content-center align-items-center text-center">
+            <h3>Ingin lacak pesanan anda?</h3>
+            <x-alert>
+                <x-slot name="pesan"><i class="bi bi-search me-3"></i>Lacak</x-slot>
+            </x-alert>
+        </div>
+
+    </div>
+</x-layout>
+
+<script>
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+
+    const appendAlert = (message, type) => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow-lg" style="z-index: 1050; min-width: 300px;" role="alert">
+                <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'} me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        alertPlaceholder.append(wrapper);
+
+        setTimeout(() => {
+            const alert = wrapper.querySelector('.alert');
+            alert.classList.add('fade');
+            setTimeout(() => wrapper.remove(), 300);
+        }, 3000);
+    };
+
+    document.getElementById('liveAlertBtn').addEventListener('click', () => {
+        appendAlert('Anda belum memesan', 'success');
+    });
+</script>
