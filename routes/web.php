@@ -18,8 +18,8 @@ Route::get('cart', [HomePageController::class, 'cart']);
 Route::get('checkout', [HomePageController::class, 'checkout']); 
  
  
-Route::group(['prefix'=>'dashboard'], function(){ 
-   Route::get('/',[DashboardController::class,'index'])->name('dashboard'); 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
  
    Route::resource('categories',ProductController::class); 
  
