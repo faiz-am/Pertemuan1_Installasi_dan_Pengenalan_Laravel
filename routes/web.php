@@ -2,20 +2,20 @@
  
 use Livewire\Volt\Volt; 
 use Illuminate\Support\Facades\Route; 
-use App\Http\Controllers\HomepageController; 
+use App\Http\Controllers\HomePageController; 
 use App\Http\Controllers\DashboardController; 
 use App\Http\Controllers\ProductController; 
  
  
  
 //kode baru diubah menjadi seperti ini 
-Route::get('/', [HomepageController::class, 'index'])->name('home'); 
-Route::get('products', [HomepageController::class, 'products']); 
-Route::get('product/{slug}', [HomepageController::class, 'product']); 
-Route::get('categories',[HomepageController::class, 'categories']); 
-Route::get('category/{slug}', [HomepageController::class, 'category']); 
-Route::get('cart', [HomepageController::class, 'cart']); 
-Route::get('checkout', [HomepageController::class, 'checkout']); 
+Route::get('/', [HomePageController::class, 'index'])->name('home'); 
+Route::get('products', [HomePageController::class, 'products']); 
+Route::get('product/{slug}', [HomePageController::class, 'product']); 
+Route::get('categories',[HomePageController::class, 'categories']); 
+Route::get('category/{slug}', [HomePageController::class, 'category']); 
+Route::get('cart', [HomePageController::class, 'cart']); 
+Route::get('checkout', [HomePageController::class, 'checkout']); 
  
  
 Route::group(['prefix'=>'dashboard'], function(){ 
