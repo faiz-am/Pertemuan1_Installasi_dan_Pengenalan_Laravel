@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Database\Eloquent\Model; 
  
-class ProductCategory extends Model 
+class Categories extends Model 
 { 
     use HasFactory; 
  
-    protected $table = 'product_categories'; // Sesuaikan dengan nama tabel kalian 
+    protected $table = 'products'; // Sesuaikan dengan nama tabel kalian 
 } 
