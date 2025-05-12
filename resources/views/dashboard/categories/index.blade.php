@@ -10,7 +10,7 @@
     <div class="flex justify-between items-center mb-4"> 
         <div> 
             <form action="{{ route('categories.index') }}" method="get"> 
-                <flux:input icon="magnifying-glass" name="q" value="{{ $q }}" placeholder="Search Product Categories" />
+                <flux:input icon="magnifying-glass" name="q" value="{{ $q }}" placeholder="Search Product" />
             </form> 
         </div> 
         <div> 

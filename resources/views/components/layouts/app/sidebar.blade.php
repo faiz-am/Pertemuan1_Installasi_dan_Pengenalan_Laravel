@@ -20,7 +20,7 @@
                 </flux:navlist.item>
 
                 <flux:navlist.item icon="clipboard-document-list" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>
-                    {{ __('Categories') }}
+                    {{ __('Product') }}
                 </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
