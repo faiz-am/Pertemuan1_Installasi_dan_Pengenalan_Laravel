@@ -1,10 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+<<<<<<< HEAD
 
 use Illuminate\Http\Request;
 use App\Models\Categories;
 use App\Models\Product;
+=======
+use Illuminate\Http\Request;
+use App\Models\Categories;
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
 
 class ProductController extends Controller
 {
@@ -13,6 +18,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+<<<<<<< HEAD
         // Mendapatkan query pencarian
         $q = $request->get('q', ''); // Menangani parameter pencarian dengan default kosong
 
@@ -23,6 +29,19 @@ class ProductController extends Controller
         })->paginate(10); // Menampilkan hasil produk dengan pagination
         
         return view('dashboard.products.index', compact('products', 'q'));
+=======
+        $categories = Categories::query()
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->q . '%')
+                      ->orWhere('description', 'like', '%' . $request->q . '%');
+            })
+            ->paginate(10);
+
+        return view('dashboard.categories.index', [
+            'categories' => $categories,
+            'q' => $request->q
+        ]);
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
     }
 
     /**
@@ -30,8 +49,12 @@ class ProductController extends Controller
      */
     public function create()
     {
+<<<<<<< HEAD
         $categories = Categories::all();
         return view('dashboard.products.create', compact('categories')); 
+=======
+        return view('dashboard.categories.create');
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
     }
 
     /**
@@ -39,6 +62,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+<<<<<<< HEAD
         // Validasi input produk
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -56,10 +80,37 @@ class ProductController extends Controller
                 [
                     'errors' => $validator->errors(),
                     'errorMessage' => 'Validasi Error, Silahkan lengkapi data terlebih dahulu'
+=======
+        /**
+         * cek validasi input
+         */
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'description' => 'required',
+            'sku' => 'required|string|max:50',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'product_category_id' => 'required|exists:product_categories,id',
+            'image_url' => 'nullable|url|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        /**
+         * jika validasi gagal,
+         * maka redirect kembali dengan pesan error
+         */
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                [
+                    'errors'=>$validator->errors(),
+                    'errorMessage'=>'Validasi Error, Silahkan lengkapi data terlebih dahulu'
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
                 ]
             );
         }
 
+<<<<<<< HEAD
         $product = new Product;
         $product->name = $request->name;
         $product->slug = $request->slug;
@@ -84,6 +135,27 @@ class ProductController extends Controller
                 'success' => 'Produk berhasil ditambahkan.'
             ]
         );
+=======
+        $category = new Categories;
+        $category->name = $request->name;
+        $category->slug = $request->slug;
+        $category->description = $request->description;
+        $category->sku = $request->sku;
+        $category->price = $request->price;
+        $category->stock = $request->stock;
+        $category->product_category_id = $request->product_category_id;
+        $category->image_url = $request->image_url;
+        $category->is_active = $request->is_active;
+
+        $category->save();
+
+        return redirect()->back()
+            ->with(
+                [
+                    'successMessage'=>'Data Berhasil Disimpan'
+                ]
+            );
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
     }
 
     /**
@@ -91,7 +163,11 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
+<<<<<<< HEAD
         //
+=======
+        $category = Categories::find($id);
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
     }
 
     /**
@@ -99,10 +175,18 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
+<<<<<<< HEAD
         $product = Product::findOrFail($id);
         $categories = Categories::all();
 
         return view('dashboard.products.edit', compact('product', 'categories'));
+=======
+        $category = Categories::find($id);
+
+        return view('dashboard.categories.edit',[
+            'category'=>$category
+        ]);
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
     }
 
     /**
@@ -110,6 +194,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
+<<<<<<< HEAD
         $product = Product::findOrFail($id);
 
         $validator = \Validator::make($request->all(), [
@@ -129,10 +214,37 @@ class ProductController extends Controller
                 [
                     'errors' => $validator->errors(),
                     'errorMessage' => 'Validasi Error, Silahkan lengkapi data terlebih dahulu'
+=======
+        /**
+         * cek validasi input
+         */
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'description' => 'required',
+            'sku' => 'required|string|max:50',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'product_category_id' => 'required|exists:product_categories,id',
+            'image_url' => 'nullable|url|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        /**
+         * jika validasi gagal,
+         * maka redirect kembali dengan pesan error
+         */
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                [
+                    'errors'=>$validator->errors(),
+                    'errorMessage'=>'Validasi Error, Silahkan lengkapi data terlebih dahulu'
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
                 ]
             );
         }
 
+<<<<<<< HEAD
         $product->name = $request->name;
         $product->slug = $request->slug;
         $product->description = $request->description;
@@ -153,6 +265,25 @@ class ProductController extends Controller
             ->with(
                 [
                     'successMessage' => 'Data Berhasil Diupdate'
+=======
+        $category = Categories::find($id);
+        $category->name = $request->name;
+        $category->slug = $request->slug;
+        $category->description = $request->description;
+        $category->sku = $request->sku;
+        $category->price = $request->price;
+        $category->stock = $request->stock;
+        $category->product_category_id = $request->product_category_id;
+        $category->image_url = $request->image_url;
+        $category->is_active = $request->is_active ?? true;
+
+        $category->save();
+
+        return redirect()->back()
+            ->with(
+                [
+                    'successMessage'=>'Data Berhasil Disimpan'
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
                 ]
             );
     }
@@ -162,6 +293,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
+<<<<<<< HEAD
         $product = Product::findOrFail($id);
 
         $product->delete();
@@ -170,3 +302,17 @@ class ProductController extends Controller
             ->with('successMessage', 'Data Berhasil Dihapus');
     }
 }
+=======
+        $category = Categories::find($id);
+
+        $category->delete();
+
+        return redirect()->back()
+            ->with(
+                [
+                    'successMessage'=>'Data Berhasil Dihapus'
+                ]
+            );
+    }
+}
+>>>>>>> 9d1354ce109fd530f117504662a9eb181b2dfa78
