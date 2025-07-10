@@ -17,7 +17,13 @@
 
                     <flux:navlist.item icon="clipboard-document-list" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
 
-                    <flux:navlist.item icon="list-bullet" :href="route('products.index')" :current="request()->routeIs('products.index')" wire:navigate>{{ __('Products') }}</flux:navlist.item>
+                    <flux:navlist.item icon="shopping-cart" :href="route('products.index')" :current="request()->routeIs('products.index')" wire:navigate>{{ __('Products') }}</flux:navlist.item>
+
+                    <flux:navlist.item icon="clipboard-document-check" href="{{ route('themes.index') }}">{{ __('Themes') }}</flux:navlist.item>
+
+                    
+                    <flux:navlist.item icon="list-bullet" href="{{ route('menu.index') }}">{{ __('Menu') }}</flux:navlist.item>
+                
                 </flux:navlist.group>
             </flux:navlist>
             
@@ -25,9 +31,6 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
-                <flux:navlist.item icon="clipboard-document-check" href="{{ route('themes.index') }}">
-                {{ __('Themes') }}
-                </flux:navlist.item>
 
                 <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits">
                 {{ __('Documentation') }}

@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\MenuController;
 
 use App\Http\Controllers\OrderController;
 
@@ -63,6 +64,7 @@ Route::group(['prefix'=>'dashboard','middleware'=>['auth','verified']], function
     Route::resource('categories',ProductCategoryController::class);
     Route::resource('products',ProductController::class);
     Route::resource('themes', ThemeController::class);
+    Route::resource('menu', MenuController::class);
 
     
 });
