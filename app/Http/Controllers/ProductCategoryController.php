@@ -71,7 +71,7 @@ class ProductCategoryController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255',
             'description' => 'required',
-            'status' => $request->has('status') ? 1 : 0
+            'status' => 'nullable|boolean'
         ]);
 
         /**
@@ -91,7 +91,6 @@ class ProductCategoryController extends Controller
         $category->name = $request->name;
         $category->slug = $request->slug;
         $category->description = $request->description;
-        
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
