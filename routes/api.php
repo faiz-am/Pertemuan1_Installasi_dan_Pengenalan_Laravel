@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\ProductController;
 
 Route::apiResource('/product-categories', ProductCategoryController::class)->only('index','store','show','update','destroy');
 Route::apiResource('/products', ProductController::class)->only('index','store','show','update','destroy');
-
+Route::patch('/products/{product}/toggle', [ProductController::class, 'toggle'])->name('products.toggle');
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

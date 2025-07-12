@@ -45,6 +45,8 @@
         <flux:input type="file" label="Image" name="image" class="mb-3" />
 
         <flux:checkbox label="Active" class="mb-6" name="is_active" {{ $product->is_active ? 'checked' : '' }} />
+        <flux:checkbox label="Status (Tampilkan di Hub)" name="status" class="mb-6" :checked="$product->status" />
+
 
         <flux:separator variant="subtle" />
 

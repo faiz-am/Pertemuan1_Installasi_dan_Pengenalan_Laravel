@@ -4,12 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Categories;
+use Illuminate\Support\Facades\Http;
 
 class ProductCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    
+    
+
+    public function toggleStatus($id){
+    $category = ProductCategory::findOrFail($id);
+    $category->status = !$category->status;
+    $category->save();
+
+    if ($category->status) {
+        // Kirim data ke HUB
+        Http::post('https://makananku.local/api/categories', [
+            'id' => $category->id,
+            'name' => $category->name,
+            'description' => $category->description,
+        ]);
+    } else {
+        // Hapus dari HUB
+        Http::delete("https://makananku.local/api/categories/{$category->id}");
+    }
+
+    return redirect()->back()->with('successMessage', 'Status kategori berhasil diperbarui.');
+}
+
+
+    
     public function index(Request $request)
     {
         $categories = Categories::query()
@@ -44,7 +70,8 @@ class ProductCategoryController extends Controller
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255',
-            'description' => 'required'
+            'description' => 'required',
+            'status' => $request->has('status') ? 1 : 0
         ]);
 
         /**
@@ -113,7 +140,7 @@ class ProductCategoryController extends Controller
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255',
-            'description' => 'required'
+            'description' => 'required',
         ]);
 
         /**

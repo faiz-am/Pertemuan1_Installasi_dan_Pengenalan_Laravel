@@ -3,36 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Categories;
 use App\Models\Product;
-
-use App\Models\Theme;
 use \Binafy\LaravelCart\Models\Cart;
 
 class HomepageController extends Controller
 {
-    private $themeFolder;
-
-    public function __construct()
-    {
-        $theme = Theme::where('status', 'active')->first();
-        if ($theme) {
-            $this->themeFolder = $theme->folder;
-        } else {
-            $this->themeFolder = 'web';
-        }
-    }
-
     public function index()
     {
         $categories = Categories::latest()->take(4)->get();
         $products = Product::paginate(20);
         
-        return view($this->themeFolder.'.homepage',[
+        return view('dashboard.home.index', [
             'categories' => $categories,
-            'products'=>$products,
-            'title'=>'Homepage'
+            'products' => $products,
+            'title' => 'Homepage'
         ]);
     }
 
@@ -48,13 +33,14 @@ class HomepageController extends Controller
 
         $products = $query->paginate(20);
 
-        return view($this->themeFolder.'.products',[
-            'title'=>$title,
+        return view('dashboard.home.products', [
+            'title' => $title,
             'products' => $products,
         ]);
     }
 
-    public function product($slug){
+    public function product($slug)
+    {
         $product = Product::whereSlug($slug)->first();
 
         if (!$product) {
@@ -66,7 +52,7 @@ class HomepageController extends Controller
             ->take(4)
             ->get();
 
-        return view($this->themeFolder.'.product', [
+        return view('dashboard.home.product', [
             'slug' => $slug,
             'product' => $product,
             'relatedProducts' => $relatedProducts,
@@ -77,8 +63,8 @@ class HomepageController extends Controller
     {
         $categories = Categories::latest()->paginate(20);
 
-        return view($this->themeFolder.'.categories',[
-            'title'=>'Categories',
+        return view('dashboard.home.categories', [
+            'title' => 'Categories',
             'categories' => $categories,
         ]);
     }
@@ -87,15 +73,15 @@ class HomepageController extends Controller
     {
         $category = Categories::whereSlug($slug)->first();
 
-        if($category){
-            $products = Product::where('product_category_id',$category->id)->paginate(20);
+        if ($category) {
+            $products = Product::where('product_category_id', $category->id)->paginate(20);
 
-            return view($this->themeFolder.'.category_by_slug', [
-                'slug' => $slug, 
+            return view('dashboard.home.category_by_slug', [
+                'slug' => $slug,
                 'category' => $category,
                 'products' => $products,
             ]);
-        }else{
+        } else {
             return abort(404);
         }
     }
@@ -103,26 +89,20 @@ class HomepageController extends Controller
     public function cart()
     {
         $cart = Cart::query()
-            ->with(
-                [
-                    'items',
-                    'items.itemable'
-                ]
-            )
+            ->with(['items', 'items.itemable'])
             ->where('user_id', auth()->guard('customer')->user()->id)
             ->first();
-        
 
-        return view($this->themeFolder.'.cart',[
-            'title'=>'Cart',
+        return view('dashboard.home.cart', [
+            'title' => 'Cart',
             'cart' => $cart,
         ]);
     }
 
     public function checkout()
     {
-        return view($this->themeFolder.'.checkout',[
-            'title'=>'Checkout'
+        return view('dashboard.home.checkout', [
+            'title' => 'Checkout'
         ]);
     }
 }

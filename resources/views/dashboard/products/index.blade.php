@@ -56,6 +56,9 @@
                     <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Actions
                     </th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Status
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -107,6 +110,7 @@
                                 {{ $product->created_at }}
                             </p>
                         </td>
+                        
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             <flux:dropdown>
                                 <flux:button icon:trailing="chevron-down">Actions</flux:button>
@@ -120,6 +124,15 @@
                                 </flux:menu>
                             </flux:dropdown>
                         </td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <form action="{{ route('products.toggle', $product->id) }}" method="POST">
+                            @csrf
+                            <button type="submit"
+                                class="px-3 py-1 rounded text-white text-xs {{ $product->is_active ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 hover:bg-gray-500' }}">
+                                {{ $product->is_active ? 'On' : 'Off' }}
+                            </button>
+                        </form>
+                    </td>
                     </tr>
                 @endforeach
             </tbody>

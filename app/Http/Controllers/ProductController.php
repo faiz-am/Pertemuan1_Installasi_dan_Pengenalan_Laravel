@@ -5,12 +5,42 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Categories;
 use App\Models\Product;
+use Illuminate\Support\Facades\Http;
+
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    
+
+public function toggle(Product $product)
+{
+    $product->status = !$product->status;
+    $product->save();
+
+    if ($product->status) {
+        // Kirim data ke HUB UMKM
+        Http::post('https://makananku.local/api/products', [
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'stock' => $product->stock,
+            'description' => $product->description,
+            'category_id' => $product->product_category_id,
+        ]);
+    } else {
+        // Hapus dari HUB
+        Http::delete("https://makananku.local/api/products/{$product->id}");
+    }
+
+    return redirect()->back()->with('successMessage', 'Status produk berhasil diperbarui.');
+}
+
+
+    
     public function index(Request $request)
     {
         // Mendapatkan query pencarian
@@ -49,6 +79,7 @@ class ProductController extends Controller
             'product_category_id' => 'nullable|exists:product_categories,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',  // Validasi gambar upload
+            'status' => 'boolean', // Validasi status produk
         ]);
 
         if ($validator->fails()) {
@@ -68,7 +99,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->stock = $request->stock;
         $product->product_category_id = $request->product_category_id;
-        $product->is_active = $request->has('is_active') ? $request->is_active : true;
+        $product->status = $request->has('status') ? $request->status : true;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -121,7 +152,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'product_category_id' => 'nullable|exists:product_categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_active' => 'boolean',
+            'status' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -138,7 +169,7 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->sku = $request->sku;
         $product->product_category_id = $request->product_category_id;
-        $product->is_active = $request->has('is_active') ? $request->is_active : true;
+        $product->status = $request->has('status') ? $request->status : true;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');

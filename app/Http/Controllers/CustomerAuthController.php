@@ -63,35 +63,36 @@ class CustomerAuthController extends Controller
     }
 
     public function store_login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        $validasi = \Validator::make($credentials, [
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+    $validasi = \Validator::make($credentials, [
+        'email' => 'required|email',
+        'password' => 'required'
+    ]);
 
-        if ($validasi->fails()) {
-            return redirect()->back()
-                ->with('errorMessage', 'Validasi error, silahkan cek kembali data anda')
-                ->withErrors($validasi)
-                ->withInput();
-        }
-
-        $customer = Customer::where('email', $credentials['email'])->first();
-
-        if ($customer && \Hash::check($credentials['password'], $customer->password)) {
-            // Login
-            \Auth::guard('customer')->login($customer);
-
-            return redirect()->route('home')
-                ->with('successMessage', 'Login berhasil');
-        } else {
-            return redirect()->back()
-                ->with('errorMessage', 'Email atau password salah')
-                ->withInput();
-        }
+    if ($validasi->fails()) {
+        return redirect()->back()
+            ->with('errorMessage', 'Validasi error, silahkan cek kembali data anda')
+            ->withErrors($validasi)
+            ->withInput();
     }
+
+    $customer = Customer::where('email', $credentials['email'])->first();
+
+    if ($customer && \Hash::check($credentials['password'], $customer->password)) {
+        // Login
+        \Auth::guard('customer')->login($customer);
+
+        return redirect()->route('customer.home') 
+            ->with('successMessage', 'Login berhasil');
+    } else {
+        return redirect()->back()
+            ->with('errorMessage', 'Email atau password salah')
+            ->withInput();
+    }
+}
+
 
     public function logout(Request $request)
     {

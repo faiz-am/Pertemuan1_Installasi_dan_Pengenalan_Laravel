@@ -38,6 +38,8 @@
         <flux:input type="file" label="Image" name="image" class="mb-3" />
 
         <flux:checkbox label="Active" name="is_active" class="mb-6" checked />
+        <flux:checkbox label="Status (Tampilkan di Hub)" name="status" class="mb-6" :checked="old('status', true)" />
+
 
         <flux:separator variant="subtle" />
 

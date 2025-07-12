@@ -3,78 +3,107 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \Binafy\LaravelCart\Models\Cart;
-use \Binafy\LaravelCart\Models\CartItem;
+use App\Models\Cart;
 use App\Models\Product;
+use App\Models\Order;
+use App\Models\OrderDetail;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    private $cart;
+    public function index(){
+    $user = Auth::guard('customer')->user();
 
-    public function __construct(){
-        $this->cart = Cart::query()->firstOrCreate(
-            [
-                'user_id' => auth()->guard('customer')->user()->id
-            ]
-        );
-    }
+    $cart = Cart::with('items.itemable')
+        ->where('user_id', $user->id)
+        ->first();
+
+    return view('cart.index', [
+        'cart' => $cart,
+    ]);
+}
+
+
+    
 
     public function add(Request $request)
     {
-        // Validate the request
-        $validator = \Validator::make($request->all(), [
+        $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->with('error', 'Invalid input data.')
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        // Find the product
+        $user = Auth::guard('customer')->user(); 
         $product = Product::findOrFail($request->product_id);
-        
-        // Check if the product is available
-        if ($product->stock < $request->quantity) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk produk ini.');
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+
+        $item = $cart->items()
+            ->where('itemable_id', $product->id)
+            ->where('itemable_type', Product::class)
+            ->first();
+
+        if ($item) {
+            $item->quantity += $request->quantity;
+            $item->save();
+        } else {
+            $cart->items()->create([
+                'itemable_id' => $product->id,
+                'itemable_type' => Product::class,
+                'quantity' => $request->quantity,
+            ]);
         }
 
-        $cartItem = new CartItem([
-            'itemable_id' => $product->id,
-            'itemable_type' => $product::class,
-            'quantity' => $request->quantity,
-        ]);
-
-        $this->cart->items()->save($cartItem);
-
-        return redirect()->route('cart.index')->with('success', 'Item added to cart.');
+        return redirect()->route('cart.index')->with('success', 'Produk ditambahkan ke keranjang.');
     }
 
     public function remove($id)
     {
+        $user = Auth::guard('customer')->user(); 
+        $cart = Cart::where('user_id', $user->id)->first();
 
-        $product = Product::findOrFail($id);
+        $item = $cart->items()->where('id', $id)->first();
+        if ($item) {
+            $item->delete();
+        }
 
-        $this->cart->removeItem($product);
-
-        return redirect()->route('cart.index')->with('success', 'Item removed from cart.');
+        return redirect()->route('cart.index')->with('success', 'Item dihapus.');
     }
 
-    public function update($id, Request $request)
+    public function checkout()
     {
+        $user = Auth::guard('customer')->user(); 
+        $cart = Cart::with('items.itemable')->where('user_id', $user->id)->first();
 
-        $product = Product::findOrFail($id);
-
-        if($request->action == 'decrease')
-        {
-            $this->cart->decreaseQuantity(item: $product);
-        }else if($request->action == 'increase'){
-            $this->cart->increaseQuantity(item: $product);
+        if (!$cart || $cart->items->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Keranjang kosong.');
         }
-        
-        return redirect()->route('cart.index')->with('success', 'Cart updated successfully.');
+
+        $order = Order::create([
+            'customer_id' => $user->id,
+            'order_date' => now(),
+            'total_amount' => 0,
+            'status' => 'pending',
+        ]);
+
+        $total = 0;
+        foreach ($cart->items as $item) {
+            $product = $item->itemable;
+            $subtotal = $product->price * $item->quantity;
+
+            OrderDetail::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => $item->quantity,
+                'unit_price' => $product->price,
+                'subtotal' => $subtotal,
+            ]);
+
+            $total += $subtotal;
+        }
+
+        $order->update(['total_amount' => $total]);
+        $cart->items()->delete();
+
+        return redirect()->route('customer.home')->with('success', 'Checkout berhasil!');
     }
 }

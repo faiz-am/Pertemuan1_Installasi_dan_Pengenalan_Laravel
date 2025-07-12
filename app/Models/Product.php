@@ -15,4 +15,15 @@ class Product extends Model implements Cartable
     {
         return $this->price;
     }
+    protected $fillable = [
+    'name',
+    'slug',
+    'description',
+    'status', // tambahkan ini
+];
+public function scopeActive($query)
+{
+    return $query->where('status', true);
+}
+
 }

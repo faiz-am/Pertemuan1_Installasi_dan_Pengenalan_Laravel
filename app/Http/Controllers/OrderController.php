@@ -2,12 +2,116 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderDetail;
 use App\Models\Order;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+   public function show($id)
+{
+    $order = Order::with('orderDetails')->findOrFail($id);
+    return view('dashboard.orders.show', compact('order'));
+}
+
+
+public function updateStatus(Request $request, $orderId)
+{
+    $request->validate([
+        'status' => 'required|in:accepted,processing,shipped',
+        'tracking_number' => 'nullable|string|max:255',
+    ]);
+
+    $order = Order::findOrFail($orderId);
+    $order->status = $request->status;
+
+    // Jika status menjadi 'shipped', maka tracking_number harus diisi
+    if ($request->status === 'shipped') {
+        if (!$request->tracking_number) {
+            return back()->withErrors(['tracking_number' => 'Nomor resi harus diisi jika status dikirim.']);
+        }
+
+        $order->tracking_number = $request->tracking_number;
+
+        // Kirim ke Hub UMKM (gunakan try-catch untuk antisipasi error)
+        try {
+            Http::post('https://makananku.local/api/orders/shipped', [
+                'order_id' => $order->id,
+                'tracking_number' => $order->tracking_number,
+            ]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['hub_umkm' => 'Gagal mengirim data ke Hub UMKM.']);
+        }
+    }
+
+    $order->save();
+
+    return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui.');
+}
+
+    public function checkout()
+{
+    $user = auth()->user();
+    $cart = Cart::where('user_id', $user->id)->first();
+
+    if (!$cart || $cart->items->isEmpty()) {
+        return back()->with('error', 'Keranjang kosong.');
+    }
+
+    $order = Order::create([
+        'customer_id' => $user->id,
+        'order_date' => now(),
+        'total_amount' => 0,
+        'status' => 'pending',
+    ]);
+
+    $total = 0;
+
+    foreach ($cart->items as $item) {
+        $product = $item->itemable;
+        $subtotal = $product->price * $item->quantity;
+
+        OrderDetail::create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'quantity' => $item->quantity,
+            'unit_price' => $product->price,
+            'subtotal' => $subtotal,
+        ]);
+
+        $total += $subtotal;
+    }
+
+    $order->update(['total_amount' => $total]);
+    $cart->items()->delete();
+
+    return redirect()->route('dashboard.home')->with('success', 'Checkout berhasil!');
+}
+
+
+    public function edit($id)
+{
+    $order = Order::with('orderDetails')->findOrFail($id);
+    return view('dashboard.orders.edit', compact('order'));
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:pending,accepted,processing,shipped,completed',
+        'tracking_number' => 'nullable|string|max:255',
+    ]);
+
+    $order = Order::findOrFail($id);
+    $order->status = $request->status;
+    $order->tracking_number = $request->tracking_number;
+    $order->save();
+
+    return redirect()->route('orders.edit', $order->id)->with('success', 'Pesanan diperbarui.');
+}
+
     public function index()
     {
         // Eager load relationships to reduce queries
@@ -51,15 +155,16 @@ class OrderController extends Controller
             }
 
             $orderData[] = [
-                'order_id' => $order->id,
-                'customer_name' => $customer->name,
-                'total_amount' => $totalAmount,
-                'items_count' => $itemsCount,
-                'last_added_to_cart' => $lastAddedToCart,
-                'completed_order_exists' => $completedOrderExists,
-                'created_at' => $order->created_at,
-                'completed_at'=> $completedOrderExists ? $order->completed_at : null,
-            ];
+            'order_id' => $order->id,
+            'customer_name' => $customer->name,
+            'total_amount' => $totalAmount,
+            'items_count' => $itemsCount,
+            'last_added_to_cart' => $lastAddedToCart,
+            'completed_order_exists' => $completedOrderExists,
+            'created_at' => \Carbon\Carbon::parse($order->created_at)->translatedFormat('d M Y'),
+            'completed_at' => $completedOrderExists ? \Carbon\Carbon::parse($order->completed_at)->translatedFormat('d M Y') : null,
+        ];
+
         }
 
         
@@ -70,6 +175,6 @@ class OrderController extends Controller
             return strtotime($bCompletedAt) - strtotime($aCompletedAt);
         });
 
-        return view('orders.index', ['orders' => $orderData]);
+        return view('dashboard.orders.index', ['orders' => $orderData]);
     }
 }

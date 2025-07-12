@@ -30,6 +30,7 @@
         @endif
 
         <flux:input type="file" label="Image" name="image" class="mb-3" />
+        <flux:checkbox label="Status (Tampilkan di Hub)" name="status" class="mb-6" :checked="$category->status" />
 
         <flux:separator />
 

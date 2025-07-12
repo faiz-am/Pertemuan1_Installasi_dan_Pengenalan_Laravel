@@ -23,6 +23,8 @@
 
                     
                     <flux:navlist.item icon="list-bullet" href="{{ route('menu.index') }}">{{ __('Menu') }}</flux:navlist.item>
+                    
+                    <flux:navlist.item icon="shopping-cart" href="{{ route('orders.index') }}">{{ __('Orders') }}</flux:navlist.item>
                 
                 </flux:navlist.group>
             </flux:navlist>
