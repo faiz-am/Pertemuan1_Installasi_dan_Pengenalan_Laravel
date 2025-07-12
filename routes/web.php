@@ -79,7 +79,8 @@ Route::group(['prefix'=>'dashboard','middleware'=>['auth','verified']], function
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::resource('orders', OrderController::class)->only(['index', 'edit', 'update', 'show']);
     Route::get('/dashboard/orders', [OrderController::class, 'index'])->name('dashboard.orders.index');
-
+    Route::post('products/sync/{id}', [ProductController::class, 'sync'])->name('products.sync');
+    Route::post('category/sync/{id}', [ProductCategoryController::class, 'sync'])->name('category.sync');
 });
 
 // dashboard khusus untuk customer yang sudah login

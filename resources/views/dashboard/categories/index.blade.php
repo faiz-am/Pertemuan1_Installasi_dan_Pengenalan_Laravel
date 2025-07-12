@@ -48,6 +48,9 @@
                         Created At
                     </th>
                     <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        on/off
+                    </th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Actions
                     </th>
                     <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -93,6 +96,17 @@
                             <p class="text-gray-900 whitespace-no-wrap">
                                 {{ $category->created_at }}
                             </p>
+                        </td>
+                        <td>
+                        <form id="sync-category-{{ $category->id }}" action="{{ route('category.sync', $category->id) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="is_active" value="@if($category->hub_category_id) 1 @else 0 @endif" >
+                            @if($category->hub_category_id)
+                                <flux:switch checked onchange="document.getElementById('sync-category-{{ $category->id }}').submit()" />
+                            @else
+                                <flux:switch onchange="document.getElementById('sync-category-{{ $category->id }}').submit()" />
+                            @endif
+                        </form>
                         </td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
 
