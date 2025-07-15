@@ -6,6 +6,7 @@ use App\Models\OrderDetail;
 use App\Models\Order;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -16,39 +17,48 @@ class OrderController extends Controller
     return view('dashboard.orders.show', compact('order'));
 }
 
-
-public function updateStatus(Request $request, $orderId)
+public function updateStatus(Request $request, $id)
 {
-    $request->validate([
-        'status' => 'required|in:accepted,processing,shipped',
-        'tracking_number' => 'nullable|string|max:255',
-    ]);
-
-    $order = Order::findOrFail($orderId);
+    $order = Order::findOrFail($id);
     $order->status = $request->status;
 
-    if ($request->status === 'shipped') {
-        if (!$request->tracking_number) {
-            return back()->withErrors(['tracking_number' => 'Nomor resi harus diisi jika status dikirim.']);
-        }
-
+    if ($request->status === 'shipped' && $request->filled('tracking_number')) {
         $order->tracking_number = $request->tracking_number;
-
-        try {
-            Http::post('https://api.phb-umkm.my.id/api/orders/shipped', [
-                'order_id' => $order->id,
-                'tracking_number' => $order->tracking_number,
-            ]);
-        } catch (\Exception $e) {
-            return back()->withErrors(['hub_umkm' => 'Gagal mengirim data ke Hub UMKM.']);
-        }
+    } elseif ($request->status !== 'shipped') {
+        $order->tracking_number = null; // Kosongkan jika status bukan shipped
     }
 
     $order->save();
 
-    return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui.');
+    return back()->with('success', 'Status pesanan berhasil diperbarui.');
 }
 
+
+
+public function customerOrders()
+{
+    $orders = \App\Models\Order::with('items.product')
+        ->where('customer_id', Auth::guard('customer')->id())
+        ->orderByDesc('created_at')
+        ->get();
+
+    return view('default.customer.orders.index', [
+        'orders' => $orders,
+        'title' => 'Daftar Pesanan Saya'
+    ]);
+}
+
+public function customerOrderShow($id)
+{
+    $order = \App\Models\Order::with('items.product')
+        ->where('customer_id', Auth::guard('customer')->id())
+        ->findOrFail($id);
+
+    return view('default.customer.orders.show', [
+        'order' => $order,
+        'title' => 'Detail Pesanan'
+    ]);
+}
 
 
     public function edit($id)

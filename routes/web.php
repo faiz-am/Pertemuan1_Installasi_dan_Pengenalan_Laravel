@@ -36,6 +36,9 @@ Route::middleware(['is_customer_login'])->group(function () {
         Route::delete('cart/remove/{id}', 'remove')->name('cart.remove');
         Route::patch('cart/update/{id}', 'update')->name('cart.update');
         Route::post('cart/checkout', 'checkout')->name('cart.checkout');
+        Route::get('orders', [OrderController::class, 'customerOrders'])->name('customer.orders.index');
+        Route::get('orders/{id}', [OrderController::class, 'customerOrderShow'])->name('customer.orders.show');
+
     });
 });
 

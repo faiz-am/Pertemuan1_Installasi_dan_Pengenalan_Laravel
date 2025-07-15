@@ -23,7 +23,16 @@
                                 {{ auth('customer')->user()->name }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('customer.home') }}">Dashboard</a></li>
+    <li><a class="dropdown-item" href="{{ route('customer.home') }}">Dashboard</a></li>
+    <li><a class="dropdown-item" href="{{ route('customer.orders.index') }}">Pesanan Saya</a></li>
+    <li>
+        <form action="{{ route('customer.logout') }}" method="POST">
+            @csrf
+            <button class="dropdown-item" type="submit">Logout</button>
+        </form>
+    </li>
+</ul>
+
                                 <li>
                                     <form action="{{ route('customer.logout') }}" method="POST">
                                         @csrf
