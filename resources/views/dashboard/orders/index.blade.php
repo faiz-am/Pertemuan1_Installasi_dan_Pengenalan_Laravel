@@ -18,7 +18,30 @@
                 <tbody class="bg-white dark:bg-zinc-900 divide-y divide-gray-200 dark:divide-zinc-800">
                     @foreach($orders as $order)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $order['order_id'] }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{{ route('orders.show', $order['order_id']) }}" class="text-blue-600 hover:underline">Detail</a>
+
+                        <!-- Form untuk update status -->
+                        <form action="{{ route('orders.updateStatus', $order['order_id']) }}" method="POST" class="mt-2">
+                            @csrf
+                            <select name="status" onchange="this.form.submit()" class="border rounded px-2 py-1 text-sm">
+                                <option value="accepted" {{ $order['status'] == 'accepted' ? 'selected' : '' }}>Diterima</option>
+                                <option value="processing" {{ $order['status'] == 'processing' ? 'selected' : '' }}>Diproses</option>
+                                <option value="shipped" {{ $order['status'] == 'shipped' ? 'selected' : '' }}>Dikirim</option>
+                            </select>
+
+                            <!-- Input resi hanya saat status = 'shipped' -->
+                            @if ($order['status'] == 'shipped')
+                                <input type="text" name="tracking_number" placeholder="No Resi"
+                                    class="border mt-1 w-full rounded px-2 py-1 text-sm"
+                                    required>
+                                <button type="submit" class="bg-blue-600 text-white mt-1 px-2 py-1 text-sm rounded">
+                                    Kirim Resi
+                                </button>
+                            @endif
+                        </form>
+                    </td>
+
                             <td class="px-6 py-4 whitespace-nowrap">{{ $order['customer_name'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $order['items_count'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">Rp{{ number_format($order['total_amount'], 0, ',', '.') }}</td>

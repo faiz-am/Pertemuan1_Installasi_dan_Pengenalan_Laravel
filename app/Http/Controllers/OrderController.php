@@ -27,7 +27,6 @@ public function updateStatus(Request $request, $orderId)
     $order = Order::findOrFail($orderId);
     $order->status = $request->status;
 
-    // Jika status menjadi 'shipped', maka tracking_number harus diisi
     if ($request->status === 'shipped') {
         if (!$request->tracking_number) {
             return back()->withErrors(['tracking_number' => 'Nomor resi harus diisi jika status dikirim.']);
@@ -35,9 +34,8 @@ public function updateStatus(Request $request, $orderId)
 
         $order->tracking_number = $request->tracking_number;
 
-        // Kirim ke Hub UMKM (gunakan try-catch untuk antisipasi error)
         try {
-            Http::post('https://makananku.local/api/orders/shipped', [
+            Http::post('https://api.phb-umkm.my.id/api/orders/shipped', [
                 'order_id' => $order->id,
                 'tracking_number' => $order->tracking_number,
             ]);
@@ -51,44 +49,6 @@ public function updateStatus(Request $request, $orderId)
     return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui.');
 }
 
-    public function checkout()
-{
-    $user = auth()->user();
-    $cart = Cart::where('user_id', $user->id)->first();
-
-    if (!$cart || $cart->items->isEmpty()) {
-        return back()->with('error', 'Keranjang kosong.');
-    }
-
-    $order = Order::create([
-        'customer_id' => $user->id,
-        'order_date' => now(),
-        'total_amount' => 0,
-        'status' => 'pending',
-    ]);
-
-    $total = 0;
-
-    foreach ($cart->items as $item) {
-        $product = $item->itemable;
-        $subtotal = $product->price * $item->quantity;
-
-        OrderDetail::create([
-            'order_id' => $order->id,
-            'product_id' => $product->id,
-            'quantity' => $item->quantity,
-            'unit_price' => $product->price,
-            'subtotal' => $subtotal,
-        ]);
-
-        $total += $subtotal;
-    }
-
-    $order->update(['total_amount' => $total]);
-    $cart->items()->delete();
-
-    return redirect()->route('dashboard.home')->with('success', 'Checkout berhasil!');
-}
 
 
     public function edit($id)
@@ -112,6 +72,7 @@ public function update(Request $request, $id)
     return redirect()->route('orders.edit', $order->id)->with('success', 'Pesanan diperbarui.');
 }
 
+    
     public function index()
     {
         // Eager load relationships to reduce queries
@@ -125,6 +86,7 @@ public function update(Request $request, $id)
             ]
         )->withCount(['items'])
         ->get();
+        
 
         $orderData = [];
         foreach($orders as $key=>$order)
@@ -163,6 +125,7 @@ public function update(Request $request, $id)
             'completed_order_exists' => $completedOrderExists,
             'created_at' => \Carbon\Carbon::parse($order->created_at)->translatedFormat('d M Y'),
             'completed_at' => $completedOrderExists ? \Carbon\Carbon::parse($order->completed_at)->translatedFormat('d M Y') : null,
+            'status' => $order->status, // <- tambahkan ini jika belum ada
         ];
 
         }

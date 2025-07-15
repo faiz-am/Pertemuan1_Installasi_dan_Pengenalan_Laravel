@@ -68,6 +68,7 @@ Route::group(['prefix'=>'customer'], function(){
 Route::group(['prefix'=>'dashboard','middleware'=>['auth','verified']], function(){
     Route::get('/',[DashboardController::class,'index'])->name('dashboard');
 
+    Route::post('/orders/{id}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::resource('categories',ProductCategoryController::class);
     Route::resource('products',ProductController::class);
     Route::resource('themes', ThemeController::class);

@@ -1,40 +1,34 @@
 <?php
 
-// app/Models/Order.php
-
 namespace App\Models;
-use App\Models\OrderDetail;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
     protected $fillable = [
-        'customer_id', 'order_date', 'total_amount', 'status', 'tracking_number'
+        'customer_id',
+        'order_date',
+        'total_amount',
+        'status',
+        'tracking_number',
     ];
 
+    // Relasi ke detail pesanan
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'order_id');
+    }
 
-    // app/Models/Order.php
-
+    // Alias untuk orderDetails (tidak wajib, opsional)
     public function items()
     {
-        return $this->hasMany(OrderDetail::class);
+        return $this->hasMany(OrderDetail::class, 'order_id');
     }
 
-
+    // Relasi ke customer
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function orderDetails()
-{
-    return $this->hasMany(OrderDetail::class);
-}
-
-
-    public function details()
-    {
-        return $this->hasMany(OrderDetail::class);
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 }

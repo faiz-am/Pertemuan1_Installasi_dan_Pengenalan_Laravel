@@ -1,5 +1,40 @@
 <x-layouts.app title="Detail Pesanan">
     <div class="space-y-6">
+        <hr class="my-6">
+
+<h2 class="text-xl font-semibold mb-2">Ubah Status Pesanan</h2>
+
+<form action="{{ route('orders.updateStatus', $order->id) }}" method="POST" class="space-y-4">
+    @csrf
+
+    <div>
+        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+        <select name="status" id="status" class="mt-1 block w-full border border-gray-300 rounded px-3 py-2">
+            <option value="accepted" {{ $order->status === 'accepted' ? 'selected' : '' }}>Pesanan Diterima</option>
+            <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Sedang Diproses</option>
+            <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Sedang Dikirim</option>
+        </select>
+    </div>
+
+    <div id="trackingInput" style="{{ $order->status === 'shipped' ? '' : 'display: none;' }}">
+        <label for="tracking_number" class="block text-sm font-medium text-gray-700">Nomor Resi</label>
+        <input type="text" name="tracking_number" id="tracking_number" class="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+            value="{{ $order->tracking_number }}">
+    </div>
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan Perubahan</button>
+</form>
+<script>
+    document.getElementById('status').addEventListener('change', function () {
+        const trackingInput = document.getElementById('trackingInput');
+        if (this.value === 'shipped') {
+            trackingInput.style.display = 'block';
+        } else {
+            trackingInput.style.display = 'none';
+        }
+    });
+</script>
+
         <h1 class="text-2xl font-bold mb-4">Detail Pesanan #{{ $order->id }}</h1>
 
         <div>
